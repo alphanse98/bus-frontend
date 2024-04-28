@@ -9,8 +9,6 @@ const LoginPage = () => {
     password: "",
   });
 
-  // username: "alphanse1dvd",
-  // password: "admin",
 
   const navigate = useNavigate();
 

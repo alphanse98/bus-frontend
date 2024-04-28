@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Heter from "../component/Heter";
+import { useNavigate } from "react-router-dom";
+import getBusListApi from "../service/BookingService";
 import InputComponent from "../component/InputComponent";
-import { data } from "autoprefixer";
+
+import { bookingBusApi } from "../service/BookingService";
 
 const BusBooking = () => {
   let leftSeat = [1, 2, 3, 4, 5, 6, 7];
@@ -9,7 +12,11 @@ const BusBooking = () => {
     8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
   ];
 
-  const bookingList = [1, 3, 16, 8, 22, 5, 10];
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+
+  const [bookingList, setBookingList] = useState([]);
 
   const [bookingData, setBookingData] = useState({
     busNumber: "Arthi travels",
@@ -36,21 +43,47 @@ const BusBooking = () => {
     setBookingData(temCopy);
   };
 
-  console.log("bookingData", bookingData);
-
   const checkBooked = (seatNUmber, bookingData) => {
-    for (let i = 0; i <= bookingData.length; i++) {
-      if (seatNUmber == bookingData[i]) return true;
+    for (let i = 0; i <= bookingList.length; i++) {
+      if (seatNUmber == bookingList[i]?.seatNumber) return true;
     }
     return false;
   };
 
+  const bookbus = async () => {
+    try {
+      await bookingBusApi(bookingData);
+      await navigate("/BusBooking");
+      await alert("Bus booked");
+    } catch (error) {
+      alert("error");
+    }
+  };
+
+  const getBookingList = async () => {
+    try {
+      let res = await getBusListApi();
+      setBookingList(res?.data);
+      setLoading(false);
+    } catch (error) {
+      alert("error");
+    }
+  };
+
+  useEffect(() => {
+    getBookingList();
+  }, []);
+
+  if (loading) return <div>Loading ...... </div>;
   if (bookingData?.seatNumber)
     return (
       <div>
         <Heter />
-        <div className="flex justify-center gap-2">
-          {bookingData?.seatNumber}
+        <div className="flex flex-col items-center  justify-center ">
+          <p className="mb-5"> Arthi travels</p>
+          <p className="mb-5"> Tirunelveli to Chennai 28-04-2024</p>
+          <p className="mb-5"> Seat numbet = {bookingData?.seatNumber}</p>
+
           <div className="w-96 flex flex-col gap-5">
             <InputComponent
               placeholder={"passenger Name"}
@@ -81,6 +114,21 @@ const BusBooking = () => {
               onChange={updateValue}
             />
           </div>
+
+          <div>
+            <button
+              onClick={() => bookbus()}
+              class=" m-5 shrink-0 inline-block w-36 rounded-lg bg-blue-600 py-3 font-bold text-white"
+            >
+              Book
+            </button>
+            <button
+              onClick={() => selectedSeat(null)}
+              class="m-5 shrink-0 inline-block w-36 rounded-lg bg-red-600 py-3 font-bold text-white"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -90,6 +138,8 @@ const BusBooking = () => {
       <div>
         <div>
           <Heter />
+          <p className="mb-5 text-center"> Arthi travels</p>
+          <p className="mb-5 text-center"> Tirunelveli to Chennai 28-04-2024</p>
           <div className="flex justify-center mt-2">
             <div
               className=" border-solid border-4 border-sky-500 p-5 flex flex-wrap flex-col rounded-md mb-20"

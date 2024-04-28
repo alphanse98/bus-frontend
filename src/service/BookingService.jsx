@@ -13,12 +13,12 @@ axios.interceptors.request.use(
   }
 );
 
-export default function getEmployee() {
-  return axios.get(baseUrl + "getEmployee");
+export default function getBusListApi() {
+  return axios.get(baseUrl + "getBookingList");
 }
 
-export  function addEmployee(employee) {
-  return axios.post(baseUrl + "createEmployee",employee);
+export  function bookingBusApi(passenger) {
+  return axios.post(baseUrl + "bookTicket",passenger);
 }
 
 export  function deleteEmployee(employee) {
